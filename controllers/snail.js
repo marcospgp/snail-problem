@@ -2,10 +2,55 @@
  * Calculates Snail well-climbing success or failure
  */
 function climbWell(height, up, down, fatigue) {
-  return {
-    success: true,
-    day: 4
-  };
+  const dailyClimbLoss = up * (fatigue / 100); // How much less height the snail climbs each day
+  let y = 0; // The current height of the snail'
+  let climbingRate = up; // The current climbing rate of the snail, which decreases each day
+
+  // Success and day will represent the snail status at the end of the loop
+  let success = false;
+  let day = 1;
+
+  console.log(`height: ${height}, up: ${up}, down: ${down}, fatigue: ${fatigue}`);
+
+  while (y >= 0) {
+    console.log();
+    console.log(`new day! current day: ${day}`);
+    console.log(`start height: ${y}`);
+
+    // Snail climbs
+    y += climbingRate;
+
+    console.log(`height after climb: ${y}`);
+
+    // Check success
+    if (y > height) {
+      console.log('success!');
+      success = true;
+      break;
+    }
+
+    // Snail falls
+    y -= down;
+
+    console.log(`height after fall: ${y}`);
+
+    // Check failure
+    if (y < 0) {
+      break;
+    }
+
+    // Update climbing rate
+    climbingRate = Math.max(0, climbingRate - dailyClimbLoss);
+
+    console.log(`new climbing rate: ${climbingRate}`);
+
+    // Update day
+    day++;
+  }
+
+  console.log('-----------');
+
+  return { success, day };
 }
 
 /**
@@ -58,6 +103,6 @@ exports.postSnail = (req, res) => {
 
   res.send(200, {
     status: '200 OK',
-    mesasge: result
+    message: result
   });
 };
