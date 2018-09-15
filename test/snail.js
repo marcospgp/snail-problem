@@ -52,7 +52,7 @@ describe('POST /snail', () => {
     request(app)
       .post('/snail')
       .send({
-        h: 50, u: 5, d: 4, f: 1
+        h: 50, u: 6, d: 4, f: 1
       })
       .expect(200, {
         status: '200 OK',
