@@ -12,7 +12,7 @@ describe('GET /snail', () => {
 });
 
 describe('POST /snail', () => {
-  it('should return the correct result', (done) => {
+  it('should return the correct result #1', (done) => {
     request(app)
       .post('/snail')
       .send({
@@ -24,7 +24,7 @@ describe('POST /snail', () => {
       }, done);
   });
 
-  it('should return the correct result', (done) => {
+  it('should return the correct result #2', (done) => {
     request(app)
       .post('/snail')
       .send({
@@ -36,7 +36,7 @@ describe('POST /snail', () => {
       }, done);
   });
 
-  it('should return the correct result', (done) => {
+  it('should return the correct result #3', (done) => {
     request(app)
       .post('/snail')
       .send({
@@ -48,7 +48,7 @@ describe('POST /snail', () => {
       }, done);
   });
 
-  it('should return the correct result', (done) => {
+  it('should return the correct result #4', (done) => {
     request(app)
       .post('/snail')
       .send({
@@ -60,7 +60,7 @@ describe('POST /snail', () => {
       }, done);
   });
 
-  it('should return the correct result', (done) => {
+  it('should return the correct result #5', (done) => {
     request(app)
       .post('/snail')
       .send({
@@ -68,11 +68,11 @@ describe('POST /snail', () => {
       })
       .expect(200, {
         status: '200 OK',
-        message: 'sucess on day 20'
+        message: 'success on day 20'
       }, done);
   });
 
-  it('should return the correct result', (done) => {
+  it('should return the correct result #6', (done) => {
     request(app)
       .post('/snail')
       .send({
