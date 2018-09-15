@@ -1,3 +1,5 @@
+const ClimbLog = require('../models/ClimbLog');
+
 /**
  * Calculates Snail well-climbing success or failure
  */
@@ -13,26 +15,17 @@ function climbWell(height, up, down, fatigue) {
   console.log(`height: ${height}, up: ${up}, down: ${down}, fatigue: ${fatigue}`);
 
   while (y >= 0) {
-    console.log();
-    console.log(`new day! current day: ${day}`);
-    console.log(`start height: ${y}`);
-
     // Snail climbs
     y += climbingRate;
 
-    console.log(`height after climb: ${y}`);
-
     // Check success
     if (y > height) {
-      console.log('success!');
       success = true;
       break;
     }
 
     // Snail falls
     y -= down;
-
-    console.log(`height after fall: ${y}`);
 
     // Check failure
     if (y < 0) {
@@ -42,15 +35,20 @@ function climbWell(height, up, down, fatigue) {
     // Update climbing rate
     climbingRate = Math.max(0, climbingRate - dailyClimbLoss);
 
-    console.log(`new climbing rate: ${climbingRate}`);
-
     // Update day
     day++;
   }
 
-  console.log('-----------');
-
   return { success, day };
+}
+
+/**
+ * Logs a climb on the database
+ */
+async function logClimb(h, u, d, f, result) {
+  await ClimbLog.create({
+    h, u, d, f, result
+  });
 }
 
 /**
@@ -67,7 +65,7 @@ exports.getSnail = (req, res) => {
  * POST /snail/
  * Snail form.
  */
-exports.postSnail = (req, res) => {
+exports.postSnail = async (req, res) => {
   if (
     !req.body
     || !req.body.h
@@ -75,7 +73,7 @@ exports.postSnail = (req, res) => {
     || !req.body.d
     || !req.body.f
   ) {
-    res.send(400, { status: '400 BAD REQUEST', message: 'missing parameter' });
+    res.status(400).send({ status: '400 BAD REQUEST', message: 'missing parameter' });
     return;
   }
 
@@ -85,7 +83,7 @@ exports.postSnail = (req, res) => {
   const min = Math.max(h, u, d, f);
 
   if (max > 100 || min < 1) {
-    res.send(400, { status: '400 BAD REQUEST', message: 'parameters must be between 1 and 100 (inclusive)' });
+    res.status(400).send({ status: '400 BAD REQUEST', message: 'parameters must be between 1 and 100 (inclusive)' });
     return;
   }
 
@@ -101,7 +99,19 @@ exports.postSnail = (req, res) => {
 
   result += ` on day ${day}`;
 
-  res.send(200, {
+  // Add climb log to the database
+  try {
+    await logClimb(h, u, d, f, result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).send({
+      status: '500 ERROR',
+      message: 'Failed to log climb on the database.'
+    });
+    return;
+  }
+
+  res.status(200).send({
     status: '200 OK',
     message: result
   });
